@@ -16,7 +16,20 @@ This guide will walk you through deploying your Laundry Management System to Ren
 2. Sign up or log in with your GitHub account
 3. Authorize Render to access your GitHub repositories
 
+### Step 1.5: Choose Your Deployment Method
+
+**🎯 Recommended: Use Blueprint (Automated)**
+- Easiest method - Render reads `render.yaml` and sets everything up
+- All services (database, backend, frontend) created automatically
+- Skip to "Blueprint Setup" section below
+
+**📝 Alternative: Manual Setup**
+- More control over each step
+- Follow the steps below for manual configuration
+
 ### Step 2: Create PostgreSQL Database
+
+**⚠️ Skip this if using Blueprint - it creates the database automatically!**
 
 1. In Render dashboard, click **"New +"** button
 2. Select **"PostgreSQL"**
@@ -30,7 +43,38 @@ This guide will walk you through deploying your Laundry Management System to Ren
 5. **⚠️ IMPORTANT**: Wait for the database to be fully created (green status)
 6. **Copy the Internal Database URL** - you'll need this later
 
-### Step 3: Deploy Backend (Laravel API)
+---
+
+## 🎯 Blueprint Setup (Recommended - Easiest Method!)
+
+If you want Render to automatically set up everything from `render.yaml`:
+
+1. In Render dashboard, click **"New +"** button
+2. Select **"Blueprint"**
+3. Connect your GitHub repository:
+   - Select **"remaruru/LaundryRender"** from the list
+   - Or paste: `https://github.com/remaruru/LaundryRender`
+4. Render will automatically:
+   - ✅ Detect `render.yaml` configuration
+   - ✅ Create PostgreSQL database
+   - ✅ Deploy backend with Docker (no manual Dockerfile path needed!)
+   - ✅ Deploy frontend as static site
+   - ✅ Link all services together
+5. Click **"Apply"** and wait for deployment (10-15 minutes)
+6. **That's it!** Skip to Step 4 to get your URLs
+
+**Note**: The `render.yaml` file already has:
+- Dockerfile path: `./laundry-backend/Dockerfile`
+- Docker context: `./laundry-backend`
+- All environment variables configured
+
+---
+
+## 📝 Manual Setup (Alternative Method)
+
+If you prefer to set up each service manually instead of using Blueprint:
+
+### Step 3: Deploy Backend (Laravel API) - Manual Setup
 
 1. In Render dashboard, click **"New +"** button
 2. Select **"Web Service"**
@@ -42,15 +86,10 @@ This guide will walk you through deploying your Laundry Management System to Ren
    - **Region**: `Oregon` (same as database)
    - **Branch**: `main`
    - **Root Directory**: `laundry-backend`
-   - **Environment**: `PHP`
-   - **Build Command**:
-     ```bash
-     composer install --no-dev --optimize-autoloader && php artisan key:generate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache
-     ```
-   - **Start Command**:
-     ```bash
-     php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT
-     ```
+   - **Environment**: **`Docker`** ⚠️ (NOT PHP - choose Docker!)
+   - **Dockerfile Path**: `./laundry-backend/Dockerfile` ⚠️ (This is what you need!)
+   - **Docker Context**: `./laundry-backend` (optional, but good to set)
+   - **Note**: No build/start commands needed - Dockerfile handles everything!
 5. Add Environment Variables:
    - Click **"Advanced"** → **"Add Environment Variable"**
    - Add these variables:
@@ -104,17 +143,20 @@ This guide will walk you through deploying your Laundry Management System to Ren
 6. Click **"Create Static Site"**
 7. Wait for the build to complete
 
-### Step 6: Run Database Migrations
+### Step 6: Run Database Migrations (if needed)
+
+**Note**: If you used the Blueprint method, migrations run automatically on first deploy. If you set up manually, you may need to run them:
 
 1. Go to your backend service (`laundry-backend`)
 2. Click on **"Shell"** tab
 3. Run the following commands:
    ```bash
-   cd laundry-backend
+   cd /var/www/html
    php artisan migrate --force
    php artisan db:seed --class=AdminSeeder
    ```
 4. This will create all tables and seed the admin user
+5. **Alternatively**, if migrations already ran during Docker startup, you can skip this step
 
 ### Step 7: Test Your Deployment
 
@@ -131,8 +173,15 @@ This guide will walk you through deploying your Laundry Management System to Ren
 
 ### Backend Issues
 
-**Problem**: Build fails with "composer not found"
-- **Solution**: Make sure you selected "PHP" as the environment
+**Problem**: Build fails with "Dockerfile not found"
+- **Solution**: 
+  1. Make sure you selected **"Docker"** as the environment (NOT PHP)
+  2. Set **Dockerfile Path** to: `./laundry-backend/Dockerfile`
+  3. Set **Docker Context** to: `./laundry-backend`
+  4. Verify the Dockerfile exists in your GitHub repository
+
+**Problem**: Build fails with "composer not found" or PHP errors
+- **Solution**: Make sure you selected **"Docker"** as the environment (the Dockerfile handles PHP setup)
 
 **Problem**: Database connection errors
 - **Solution**: 
