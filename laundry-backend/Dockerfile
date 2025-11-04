@@ -54,7 +54,8 @@ php artisan route:cache || true\n\
 php artisan view:cache || true\n\
 # Run migrations and seed database (don'\''t fail if already done)\n\
 php artisan migrate --force || true\n\
-php artisan db:seed --class=AdminSeeder || true\n\
+# Seed admin user (updateOrCreate ensures it works even if user exists)\n\
+php artisan db:seed --class=AdminSeeder || php artisan tinker --execute="App\Models\User::updateOrCreate(['email' => '\''admin@laundry.com'\''], ['name' => '\''Admin'\'', 'password' => Hash::make('\''admin123'\''), 'role' => '\''admin'\'']);" || true\n\
 # Get port from environment or default to 80\n\
 PORT=${PORT:-80}\n\
 echo "Starting Laravel server on port $PORT"\n\

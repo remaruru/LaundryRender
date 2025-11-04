@@ -60,7 +60,14 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        // Try to authenticate
         if (!Auth::attempt($request->only('email', 'password'))) {
+            // Log for debugging
+            \Log::info('Login attempt failed', [
+                'email' => $request->email,
+                'user_exists' => User::where('email', $request->email)->exists(),
+            ]);
+            
             return response()->json([
                 'message' => 'Invalid login credentials'
             ], 401);

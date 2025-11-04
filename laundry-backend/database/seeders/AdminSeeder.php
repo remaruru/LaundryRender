@@ -14,11 +14,14 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'name' => 'Admin',
-            'email' => 'admin@laundry.com',
-            'password' => Hash::make('admin123'),
-            'role' => 'admin',
-        ]);
+        // Use updateOrCreate to ensure admin exists, even if already created
+        User::updateOrCreate(
+            ['email' => 'admin@laundry.com'],
+            [
+                'name' => 'Admin',
+                'password' => Hash::make('admin123'),
+                'role' => 'admin',
+            ]
+        );
     }
 }
