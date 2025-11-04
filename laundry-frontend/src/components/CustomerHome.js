@@ -18,10 +18,17 @@ function CustomerHome() {
 
   const fetchWeather = async () => {
     try {
-      // Skip weather API for now - use demo data directly
-      // To enable real weather data, get a free API key from openweathermap.org
-      // and replace 'demo_key' with your actual key
-      setDemoWeather();
+      // Using OpenWeatherMap API
+      const response = await axios.get('https://api.openweathermap.org/data/2.5/forecast', {
+        params: {
+          q: 'Manila,PH',
+          appid: '67c3afe347b2430fa8022239250311',
+          units: 'metric',
+          cnt: 5
+        }
+      });
+      setWeather(response.data);
+      findBestLaundryDay(response.data.list);
     } catch (error) {
       console.log('Weather API error:', error);
       // Set demo weather data if API fails
@@ -157,7 +164,7 @@ function CustomerHome() {
 
                 {bestDay && (
                   <div className="best-day">
-                    <div className="best-day-label">wala pang API hehe exampol lng :P⭐ Best Day for Laundry:</div>
+                    <div className="best-day-label">⭐ Best Day for Laundry:</div>
                     <div className="best-day-info">{bestDay.date} • {Math.round(bestDay.temp)}°C</div>
                   </div>
                 )}
