@@ -9,11 +9,20 @@ const getApiBaseUrl = () => {
   
   // Ensure URL has protocol (https:// or http://)
   if (envUrl.startsWith('http://') || envUrl.startsWith('https://')) {
+    // Check if it has .onrender.com, if not add it
+    if (envUrl.includes('laundry-backend') && !envUrl.includes('.onrender.com')) {
+      return envUrl.replace('laundry-backend', 'laundry-backend-t63y.onrender.com');
+    }
     return envUrl;
   }
   
   // If no protocol, add https://
-  return `https://${envUrl}`;
+  let url = `https://${envUrl}`;
+  // If it's just the service name, add .onrender.com
+  if (url.includes('laundry-backend') && !url.includes('.onrender.com')) {
+    url = 'https://laundry-backend-t63y.onrender.com';
+  }
+  return url;
 };
 
 const API_BASE_URL = getApiBaseUrl();
