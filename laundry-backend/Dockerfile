@@ -44,8 +44,9 @@ php artisan key:generate --force || true\n\
 php artisan config:cache || true\n\
 php artisan route:cache || true\n\
 php artisan view:cache || true\n\
-# Run migrations\n\
+# Run migrations and seed database\n\
 php artisan migrate --force || true\n\
+php artisan db:seed --class=AdminSeeder || true\n\
 # Start Laravel server on the port Render provides\n\
 php artisan serve --host=0.0.0.0 --port=${PORT:-80}' > /start.sh && chmod +x /start.sh
 
