@@ -16,9 +16,30 @@ export function AuthProvider({ children }) {
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
     if (token && userData) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      setUser(JSON.parse(userData));
-      setLoading(false);
+      try {
+        // Validate that userData is valid JSON before parsing
+        const parsedUser = JSON.parse(userData);
+        if (parsedUser && typeof parsedUser === 'object') {
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          setUser(parsedUser);
+          setLoading(false);
+        } else {
+          // Invalid user data, clear it and fetch fresh
+          localStorage.removeItem('user');
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          fetchUser();
+        }
+      } catch (error) {
+        // Invalid JSON, clear it and fetch fresh
+        console.error('Error parsing user data:', error);
+        localStorage.removeItem('user');
+        if (token) {
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          fetchUser();
+        } else {
+          setLoading(false);
+        }
+      }
     } else if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       fetchUser();

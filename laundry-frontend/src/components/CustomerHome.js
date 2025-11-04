@@ -18,18 +18,10 @@ function CustomerHome() {
 
   const fetchWeather = async () => {
     try {
-      // Using OpenWeatherMap API - you'll need to get your own API key
-      // For now, I'll use a demo approach
-      const response = await axios.get('https://api.openweathermap.org/data/2.5/forecast', {
-        params: {
-          q: 'Manila,PH',
-          appid: 'demo_key', // Replace with your actual API key
-          units: 'metric',
-          cnt: 5
-        }
-      });
-      setWeather(response.data);
-      findBestLaundryDay(response.data.list);
+      // Skip weather API for now - use demo data directly
+      // To enable real weather data, get a free API key from openweathermap.org
+      // and replace 'demo_key' with your actual key
+      setDemoWeather();
     } catch (error) {
       console.log('Weather API error:', error);
       // Set demo weather data if API fails
