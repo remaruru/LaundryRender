@@ -61,7 +61,7 @@ services:
           property: host
 
   # PostgreSQL Database
-  - type: pspg
+  - type: pg
     name: laundry-database
     region: oregon
     plan: free
