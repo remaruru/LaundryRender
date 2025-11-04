@@ -1,0 +1,79 @@
+services:
+  # Backend API Service (Laravel)
+  - type: web
+    name: laundry-backend
+    env: php
+    region: oregon
+    plan: free
+    buildCommand: |
+      cd laundry-backend &&
+      composer install --no-dev --optimize-autoloader &&
+      php artisan key:generate --force &&
+      php artisan config:cache &&
+      php artisan route:cache &&
+      php artisan view:cache
+    startCommand: |
+      cd laundry-backend &&
+      php artisan migrate --force &&
+      php artisan serve --host=0.0.0.0 --port=$PORT
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: LOG_LEVEL
+        value: error
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: laundry-database
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: laundry-database
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: laundry-database
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: laundry-database
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: laundry-database
+          property: password
+      - key: CACHE_DRIVER
+        value: file
+      - key: SESSION_DRIVER
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+
+  # Frontend Service (React Static Site)
+  - type: web
+    name: laundry-frontend
+    env: static
+    buildCommand: |
+      cd laundry-frontend &&
+      npm install &&
+      REACT_APP_API_URL=$API_URL npm run build
+    staticPublishPath: laundry-frontend/build
+    pullRequestPreviewsEnabled: false
+    envVars:
+      - key: API_URL
+        fromService:
+          name: laundry-backend
+          type: web
+          property: host
+
+  # PostgreSQL Database
+  - type: pspg
+    name: laundry-database
+    region: oregon
+    plan: free
+    databaseName: laundry_db
+    user: laundry_user
+
