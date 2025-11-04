@@ -60,11 +60,11 @@ services:
           type: web
           property: host
 
-  # PostgreSQL Database
-  - type: postgres
-    name: laundry-database
-    region: oregon
-    plan: free
+# PostgreSQL Database (separate section, not in services)
+databases:
+  - name: laundry-database
     databaseName: laundry_db
     user: laundry_user
+    region: oregon
+    plan: free
 
