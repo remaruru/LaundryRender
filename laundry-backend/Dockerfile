@@ -46,8 +46,11 @@ if [ ! -f .env ]; then\n\
 fi\n\
 # Generate app key if not exists\n\
 php artisan key:generate --force || true\n\
-# Clear config cache first to avoid issues\n\
+# Clear all caches first to avoid issues\n\
 php artisan config:clear || true\n\
+php artisan route:clear || true\n\
+php artisan view:clear || true\n\
+php artisan cache:clear || true\n\
 # Cache configuration for performance\n\
 php artisan config:cache || true\n\
 php artisan route:cache || true\n\
