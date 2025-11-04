@@ -42,6 +42,8 @@ services:
         value: file
       - key: QUEUE_CONNECTION
         value: sync
+      - key: APP_URL
+        value: https://laundry-backend.onrender.com
 
   # Frontend Service (React Static Site)
   - type: web
