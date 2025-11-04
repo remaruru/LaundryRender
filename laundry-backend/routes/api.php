@@ -13,6 +13,31 @@ Route::get('/user', function (Request $request) {
 // Public routes
 Route::get('/orders/search', [OrderController::class, 'searchByCustomerName']);
 
+// Admin setup route (for initial setup - should be removed in production)
+Route::post('/setup-admin', function () {
+    try {
+        $admin = \App\Models\User::updateOrCreate(
+            ['email' => 'admin@laundry.com'],
+            [
+                'name' => 'Admin',
+                'password' => \Illuminate\Support\Facades\Hash::make('admin123'),
+                'role' => 'admin',
+            ]
+        );
+        
+        return response()->json([
+            'message' => 'Admin user created/updated successfully',
+            'email' => $admin->email,
+            'role' => $admin->role,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Error creating admin user',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+});
+
 // Authentication routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
