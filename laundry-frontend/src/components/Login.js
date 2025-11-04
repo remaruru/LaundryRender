@@ -32,11 +32,24 @@ function Login() {
       // We need to wait for the user state to be updated, then redirect
       setTimeout(() => {
         // Get user from the response data that was returned from login
-        const userData = result.user || JSON.parse(localStorage.getItem('user') || '{}');
-        if (userData.role === 'admin') {
-          navigate('/admin');
-        } else {
-          navigate('/employee');
+        try {
+          const storedUser = localStorage.getItem('user');
+          const userData = result.user || (storedUser ? JSON.parse(storedUser) : null);
+          if (userData && userData.role === 'admin') {
+            navigate('/admin');
+          } else if (userData && userData.role === 'employee') {
+            navigate('/employee');
+          }
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+          // If parsing fails, try to get user from result
+          if (result.user) {
+            if (result.user.role === 'admin') {
+              navigate('/admin');
+            } else {
+              navigate('/employee');
+            }
+          }
         }
       }, 100);
     } else {
