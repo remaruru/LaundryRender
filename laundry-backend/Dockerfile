@@ -46,15 +46,20 @@ if [ ! -f .env ]; then\n\
 fi\n\
 # Generate app key if not exists\n\
 php artisan key:generate --force || true\n\
+# Clear config cache first to avoid issues\n\
+php artisan config:clear || true\n\
 # Cache configuration for performance\n\
 php artisan config:cache || true\n\
 php artisan route:cache || true\n\
 php artisan view:cache || true\n\
-# Run migrations and seed database\n\
+# Run migrations and seed database (don'\''t fail if already done)\n\
 php artisan migrate --force || true\n\
 php artisan db:seed --class=AdminSeeder || true\n\
+# Get port from environment or default to 80\n\
+PORT=${PORT:-80}\n\
+echo "Starting Laravel server on port $PORT"\n\
 # Start Laravel server on the port Render provides\n\
-php artisan serve --host=0.0.0.0 --port=${PORT:-80}' > /start.sh && chmod +x /start.sh
+exec php artisan serve --host=0.0.0.0 --port=$PORT' > /start.sh && chmod +x /start.sh
 
 # Start Laravel server
 CMD ["/start.sh"]
