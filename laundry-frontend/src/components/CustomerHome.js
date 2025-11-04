@@ -95,7 +95,9 @@ function CustomerHome() {
     } catch (error) {
       console.error('Error searching orders:', error);
       console.error('Error details:', error.response?.data);
-      setError(error.response?.data?.message || 'Error searching orders. Please try again.');
+      console.error('Error status:', error.response?.status);
+      console.error('API URL:', `${API_ENDPOINT}/orders/search`);
+      setError(error.response?.data?.message || error.message || 'Error searching orders. Please try again.');
     } finally {
       setLoading(false);
     }
