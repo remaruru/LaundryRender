@@ -3,7 +3,7 @@ services:
   - type: web
     name: laundry-backend
     env: docker
-    region: oregon
+    region: singapore
     plan: free
     dockerfilePath: ./laundry-backend/Dockerfile
     dockerContext: ./laundry-backend
@@ -67,6 +67,6 @@ databases:
   - name: laundry-database
     databaseName: laundry_db
     user: laundry_user
-    region: oregon
+    region: singapore
     plan: free
 
