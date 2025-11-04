@@ -2,20 +2,11 @@ services:
   # Backend API Service (Laravel)
   - type: web
     name: laundry-backend
-    env: php
+    env: docker
     region: oregon
     plan: free
-    buildCommand: |
-      cd laundry-backend &&
-      composer install --no-dev --optimize-autoloader &&
-      php artisan key:generate --force &&
-      php artisan config:cache &&
-      php artisan route:cache &&
-      php artisan view:cache
-    startCommand: |
-      cd laundry-backend &&
-      php artisan migrate --force &&
-      php artisan serve --host=0.0.0.0 --port=$PORT
+    dockerfilePath: ./laundry-backend/Dockerfile
+    dockerContext: ./laundry-backend
     envVars:
       - key: APP_ENV
         value: production
