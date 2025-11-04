@@ -12,8 +12,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Update the service_type enum to include 'mixed'
-        DB::statement("ALTER TABLE orders MODIFY COLUMN service_type ENUM('wash_dry', 'wash_only', 'dry_only', 'mixed') DEFAULT 'wash_dry'");
+        $driver = DB::getDriverName();
+        
+        if ($driver === 'pgsql') {
+            // PostgreSQL: Drop and recreate the column with new enum values
+            Schema::table('orders', function (Blueprint $table) {
+                $table->dropColumn('service_type');
+            });
+            
+            Schema::table('orders', function (Blueprint $table) {
+                $table->string('service_type')->default('wash_dry')->after('status');
+            });
+            
+            // Add check constraint for PostgreSQL
+            DB::statement("ALTER TABLE orders ADD CONSTRAINT orders_service_type_check CHECK (service_type IN ('wash_dry', 'wash_only', 'dry_only', 'mixed'))");
+        } else {
+            // MySQL/MariaDB: Use MODIFY COLUMN
+            DB::statement("ALTER TABLE orders MODIFY COLUMN service_type ENUM('wash_dry', 'wash_only', 'dry_only', 'mixed') DEFAULT 'wash_dry'");
+        }
     }
 
     /**
@@ -21,7 +37,23 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Revert the service_type enum to original values
-        DB::statement("ALTER TABLE orders MODIFY COLUMN service_type ENUM('wash_dry', 'wash_only', 'dry_only') DEFAULT 'wash_dry'");
+        $driver = DB::getDriverName();
+        
+        if ($driver === 'pgsql') {
+            // PostgreSQL: Drop and recreate the column with original enum values
+            Schema::table('orders', function (Blueprint $table) {
+                $table->dropColumn('service_type');
+            });
+            
+            Schema::table('orders', function (Blueprint $table) {
+                $table->string('service_type')->default('wash_dry')->after('status');
+            });
+            
+            // Add check constraint for PostgreSQL with original values
+            DB::statement("ALTER TABLE orders ADD CONSTRAINT orders_service_type_check CHECK (service_type IN ('wash_dry', 'wash_only', 'dry_only'))");
+        } else {
+            // MySQL/MariaDB: Use MODIFY COLUMN
+            DB::statement("ALTER TABLE orders MODIFY COLUMN service_type ENUM('wash_dry', 'wash_only', 'dry_only') DEFAULT 'wash_dry'");
+        }
     }
 };

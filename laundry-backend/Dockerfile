@@ -38,6 +38,12 @@ EXPOSE 80
 RUN echo '#!/bin/bash\n\
 set -e\n\
 cd /var/www/html\n\
+# Create .env file if it doesn'\''t exist (for key generation)\n\
+if [ ! -f .env ]; then\n\
+  touch .env\n\
+  echo "APP_ENV=production" >> .env\n\
+  echo "APP_DEBUG=false" >> .env\n\
+fi\n\
 # Generate app key if not exists\n\
 php artisan key:generate --force || true\n\
 # Cache configuration for performance\n\
