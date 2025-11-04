@@ -43,7 +43,7 @@ services:
       - key: QUEUE_CONNECTION
         value: sync
       - key: APP_URL
-        value: https://laundry-backend.onrender.com
+        value: https://laundry-backend-t63y.onrender.com
 
   # Frontend Service (React Static Site)
   - type: web
