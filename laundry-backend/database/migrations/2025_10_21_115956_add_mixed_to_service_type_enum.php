@@ -21,7 +21,7 @@ return new class extends Migration
             });
             
             Schema::table('orders', function (Blueprint $table) {
-                $table->string('service_type')->default('wash_dry')->after('status');
+                $table->string('service_type')->default('wash_dry');
             });
             
             // Add check constraint for PostgreSQL
@@ -46,7 +46,7 @@ return new class extends Migration
             });
             
             Schema::table('orders', function (Blueprint $table) {
-                $table->string('service_type')->default('wash_dry')->after('status');
+                $table->string('service_type')->default('wash_dry');
             });
             
             // Add check constraint for PostgreSQL with original values
